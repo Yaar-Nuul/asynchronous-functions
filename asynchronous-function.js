@@ -36,3 +36,62 @@ fetchAndLogUserData();
 
 
 
+// You have an asynchronous function performTask() that returns a Promise. 
+// The Promise resolves if the task is successful and rejects if there's an error. 
+// Write a function that calls performTask() and logs a custom success message if the task is successful, and a custom error message if there's an error.
+
+async function handleTask() {
+    try {
+        await performTask();
+        console.log("Task completed successfully!");
+    } catch (error) {
+        console.error("Error occurred during task execution:", error);
+    }
+}
+
+
+
+
+// Retry Logic:
+// Scenario:
+// Write a function unstableTask that:
+
+// 1.Accepts a taskName and failureProbability (a number between 0 and 1).
+// 2. Returns a Promise that:
+// Resolves immediately with a success message if a randomly generated number is greater than failureProbability.
+// Rejects immediately with a failure message if a randomly generated number is less than or equal to failureProbability.
+// Write another function executeWithRetry that:
+
+// Accepts a taskName, retries, and failureProbability.
+// Uses a retry mechanism to attempt the unstableTask up to retries times.
+// Logs whether the task succeeded or failed after all attempts.
+
+
+
+function unstableTask(taskName, failureProbability) {
+    return new Promise((resolve, reject) => {
+        const random = Math.random();
+        if (random > failureProbability) {
+            resolve(`${taskName} completed successfully.`);
+        } else {
+            reject(`${taskName} failed with probability ${failureProbability}.`);
+        }
+    });
+}
+
+async function executeWithRetry(taskName, retries, failureProbability) {
+    let attempt = 0;
+    while (attempt < retries) {
+        try {
+            const result = await unstableTask(taskName, failureProbability);
+            console.log(result);
+            return; 
+        } catch (error) {
+            console.error(`Attempt ${attempt + 1}: ${error}`);
+            attempt++;
+        }
+    }
+    console.log(`${taskName} failed after ${retries} attempts.`);
+}
+
+executeWithRetry("Unstable Task", 3, 0.9)
